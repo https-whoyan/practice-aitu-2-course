@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../shared/widgets/widget_gallery_screen.dart';
 import 'app_routes.dart';
 
 part 'app_router.g.dart';
@@ -40,6 +41,10 @@ GoRouter goRouter(Ref ref) {
           title: 'Home',
           subtitle: 'Навигация по ролям появится в шагах 8–9',
         ),
+      ),
+      GoRoute(
+        path: '/gallery',
+        builder: (context, state) => const WidgetGalleryScreen(),
       ),
     ],
     errorBuilder: (context, state) => _StubScreen(
