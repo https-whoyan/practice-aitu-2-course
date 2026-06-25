@@ -9,6 +9,7 @@ import '../features/auth/presentation/forgot_password_screen.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/register_screen.dart';
 import '../features/auth/presentation/verify_email_screen.dart';
+import '../shared/navigation/role_routes.dart';
 import '../shared/widgets/splash_screen.dart';
 import '../shared/widgets/widget_gallery_screen.dart';
 import 'app_routes.dart';
@@ -60,26 +61,18 @@ GoRouter goRouter(Ref ref) {
         path: AppRoutes.blocked,
         builder: (context, state) => const BlockedScreen(),
       ),
-      // Корневые разделы по ролям. В шаге 9 заменяются на StatefulShellRoute
-      // с навигацией и dashboard'ами; пока — заглушки.
-      GoRoute(
-        path: AppRoutes.admin,
-        builder: (context, state) => const _RoleHomeStub(title: 'Админ'),
-      ),
-      GoRoute(
-        path: AppRoutes.teacher,
-        builder: (context, state) => const _RoleHomeStub(title: 'Преподаватель'),
-      ),
-      GoRoute(
-        path: AppRoutes.student,
-        builder: (context, state) => const _RoleHomeStub(title: 'Студент'),
-      ),
+      // Ролевые навигационные деревья (StatefulShellRoute) с разделами-заглушками
+      // и dashboard'ами: /admin, /teacher, /student.
+      ...roleShellRoutes(),
       GoRoute(
         path: '/gallery',
         builder: (context, state) => const WidgetGalleryScreen(),
       ),
     ],
-    errorBuilder: (context, state) => _RoleHomeStub(title: state.uri.toString()),
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Маршрут не найден')),
+      body: Center(child: Text(state.uri.toString())),
+    ),
   );
 }
 
@@ -128,28 +121,4 @@ String? _redirect(Ref ref, String location) {
   }
 
   return null;
-}
-
-/// Временная заглушка корневого раздела роли (заменяется в шаге 9).
-class _RoleHomeStub extends ConsumerWidget {
-  const _RoleHomeStub({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Раздел: $title'),
-        actions: [
-          IconButton(
-            tooltip: 'Выйти',
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-        ],
-      ),
-      body: Center(child: Text('Dashboard «$title» — в шаге 9')),
-    );
-  }
 }
