@@ -2,6 +2,11 @@
 
 Детализация шага 8 из [`session-1-foundation.md`](session-1-foundation.md), блок B (Авторизация и роли).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `firestore.rules`
+> (хелперы `isSignedIn/getRole/isAdmin/isOwner/...`, default deny), `redirect` в
+> `lib/routing/`. Тесты: `test/security/firestore_rules.test.mjs` (11 ✅),
+> `test/routing/redirect_test.dart` ✅.
+
 > Формат: **Цель** · **Действия** · **Security Rules (каркас)** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

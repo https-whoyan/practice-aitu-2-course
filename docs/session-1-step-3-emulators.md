@@ -2,6 +2,10 @@
 
 Детализация шага 3 из [`session-1-foundation.md`](session-1-foundation.md), блок A (Инфраструктура).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `firebase.json`,
+> `firestore.rules`, `storage.rules`, `firestore.indexes.json`,
+> `lib/firebase/emulators.dart`, `functions/`. Запуск — [`dev-runbook.md`](dev-runbook.md).
+
 > Формат: **Цель** · **Действия** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

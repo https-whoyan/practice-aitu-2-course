@@ -2,6 +2,10 @@
 
 Детализация шага 2 из [`session-1-foundation.md`](session-1-foundation.md), блок A (Инфраструктура).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код:
+> `lib/firebase/firebase_options_{dev,staging,prod}.dart`,
+> `lib/firebase/firebase_providers.dart`, инициализация в `lib/bootstrap.dart`.
+
 > Формат: **Цель** · **Действия** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

@@ -2,6 +2,10 @@
 
 Детализация шага 6 из [`session-1-foundation.md`](session-1-foundation.md), блок B (Авторизация и роли).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `lib/features/auth/domain/`
+> (`app_user`, `user_profile`, `user_role`, `account_status`, `user_repository`).
+> Тест: `test/features/auth/models_serialization_test.dart` ✅.
+
 > Формат: **Цель** · **Действия** · **Модель данных** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

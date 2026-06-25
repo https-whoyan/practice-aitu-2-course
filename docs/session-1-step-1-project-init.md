@@ -2,6 +2,10 @@
 
 Детализация шага 1 из [`session-1-foundation.md`](session-1-foundation.md), блок A (Инфраструктура).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: структура `lib/`,
+> flavors `lib/main.dart` · `lib/main_staging.dart` · `lib/main_prod.dart`,
+> `lib/core/config/app_config.dart`, `analysis_options.yaml`.
+
 > Формат: **Цель** · **Действия** · **Структура** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

@@ -2,6 +2,10 @@
 
 Детализация шага 4 из [`session-1-foundation.md`](session-1-foundation.md), блок A (Инфраструктура).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `pubspec.yaml` (Riverpod
+> code-gen + go_router + freezed), `lib/core/error/` (`Failure`), `lib/routing/`,
+> `lib/services/`, эталон в `lib/shared/example/`.
+
 > Формат: **Цель** · **Действия** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

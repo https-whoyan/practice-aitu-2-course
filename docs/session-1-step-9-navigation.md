@@ -2,6 +2,10 @@
 
 Детализация шага 9 из [`session-1-foundation.md`](session-1-foundation.md), блок C (Навигация-скелет).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `lib/shared/navigation/`
+> (`app_shell`, `nav_section`, `role_routes`),
+> `lib/features/dashboard/presentation/dashboards.dart`.
+
 > Формат: **Цель** · **Действия** · **Разделы по ролям** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

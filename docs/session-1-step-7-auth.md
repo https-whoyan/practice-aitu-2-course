@@ -2,6 +2,10 @@
 
 Детализация шага 7 из [`session-1-foundation.md`](session-1-foundation.md), блок B (Авторизация и роли).
 
+> **Статус: ✅ Реализовано** (пост-аудит 2026-06-25). Код: `lib/features/auth/data/`
+> (`auth_repository`, провайдеры), `lib/features/auth/presentation/` (экраны).
+> Тест: `test/features/auth/auth_repository_test.dart` ✅.
+
 > Формат: **Цель** · **Действия** · **Экраны** · **Решения** · **Артефакты** · **Готово, когда**.
 
 ---

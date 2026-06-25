@@ -5,6 +5,10 @@
 
 Исходное ТЗ: `../ТЗ_учебное_приложение_Flutter_Firebase.docx`
 
+> **Статус:** Сессия 1 (Фундамент, ~35%) — ✅ реализована и проверена
+> (пост-аудит 2026-06-25: `dart analyze` чисто, 14 Flutter-тестов + 11 тестов
+> Security Rules зелёные). Сессия 2 (~65%) — в планах.
+
 ## Содержание
 
 - [`plan-overview.md`](plan-overview.md) — обзор плана, разбивка 35/65 на 2 сессии
@@ -23,6 +27,6 @@
 - [`session-1-step-8-roles-guards.md`](session-1-step-8-roles-guards.md) — Шаг 8: Роли и редирект
 - [`session-1-step-9-navigation.md`](session-1-step-9-navigation.md) — Шаг 9: Скелет навигации и dashboard'ы
 
-### Для исполнителя
+### Разработка
 
-- [`agent-prompt-session-1.md`](agent-prompt-session-1.md) — готовый промт для удалённого ИИ-агента на реализацию всех 9 шагов Сессии 1
+- [`dev-runbook.md`](dev-runbook.md) — локальный запуск: эмуляторы, приложение, тесты
