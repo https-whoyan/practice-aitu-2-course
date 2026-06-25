@@ -8,8 +8,10 @@ import 'package:json_annotation/json_annotation.dart';
 class TimestampConverter implements JsonConverter<DateTime, Timestamp> {
   const TimestampConverter();
 
+  // Нормализуем в UTC: храним и сравниваем время единообразно
+  // (`Timestamp.toDate()` иначе возвращает локальное время).
   @override
-  DateTime fromJson(Timestamp timestamp) => timestamp.toDate();
+  DateTime fromJson(Timestamp timestamp) => timestamp.toDate().toUtc();
 
   @override
   Timestamp toJson(DateTime date) => Timestamp.fromDate(date);
@@ -21,7 +23,7 @@ class NullableTimestampConverter
   const NullableTimestampConverter();
 
   @override
-  DateTime? fromJson(Timestamp? timestamp) => timestamp?.toDate();
+  DateTime? fromJson(Timestamp? timestamp) => timestamp?.toDate().toUtc();
 
   @override
   Timestamp? toJson(DateTime? date) =>
