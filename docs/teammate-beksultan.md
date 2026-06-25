@@ -20,6 +20,11 @@ cd practice-aitu-2-course
 # 2. встать на свою ветку
 git checkout beksultan
 
+# 2a. ПРОВЕРЬ СЕБЯ: должны быть видны твои шаги (step 4/5/6)
+git log --oneline -6
+#   Если видишь только один коммит про «ТЗ и план» — значит Yan ещё не выложил
+#   ветки в источник. Подожди его и сделай: git pull --ff-only origin beksultan
+
 # 3. добавить финальный репозиторий как remote
 git remote add prct46 git@github.com:Tduyer/Prct_46.git
 #   HTTPS-вариант: git remote add prct46 https://github.com/Tduyer/Prct_46.git
@@ -49,6 +54,13 @@ git push prct46 beksultan:main
 - Авторов коммитов не меняем.
 - `git pull` — только с `--ff-only`.
 - Нужен доступ на запись (collaborator) к `Tduyer/Prct_46`.
+  Авторизация: SSH-ключ на GitHub (вариант `git@…`) или HTTPS + Personal Access Token.
+
+## Если пуш отклонён
+
+- `... rejected ... (non-fast-forward)` — **не делай `--force`.** Причины обычно две:
+  1. Yan ещё не залил свою ветку — дождись его, потом пушь.
+  2. Кто-то нарушил порядок. Сверьтесь: должно быть Yan → ты → Duran.
 
 Картина целиком: [`git-workflow.md`](git-workflow.md).
 Запуск проекта локально: [`dev-runbook.md`](dev-runbook.md).
