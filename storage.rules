@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Каркас правил Storage — «default deny».
+// Доступ к файлам (аватары, материалы курсов) открывается в Сессии 2.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

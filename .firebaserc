@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "demo-eduapp-dev",
+    "dev": "demo-eduapp-dev",
+    "staging": "eduapp-staging",
+    "prod": "eduapp-prod"
+  }
+}
