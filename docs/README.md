@@ -30,4 +30,10 @@
 ### Разработка
 
 - [`dev-runbook.md`](dev-runbook.md) — локальный запуск: эмуляторы, приложение, тесты
-- [`git-workflow.md`](git-workflow.md) — структура веток, что сделано, инструкция для команды
+- [`git-workflow.md`](git-workflow.md) — структура веток, что сделано, сборка в Prct_46
+
+### Персональные инструкции (заливка в Prct_46)
+
+- [`teammate-yan.md`](teammate-yan.md) — Yan (ветка `yan`, заливает первым)
+- [`teammate-beksultan.md`](teammate-beksultan.md) — Beksultan (ветка `beksultan`, второй)
+- [`teammate-duran.md`](teammate-duran.md) — Duran (ветка `duran`, последний)
