@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../features/auth/presentation/forgot_password_screen.dart';
+import '../features/auth/presentation/login_screen.dart';
+import '../features/auth/presentation/register_screen.dart';
+import '../features/auth/presentation/verify_email_screen.dart';
 import '../shared/widgets/widget_gallery_screen.dart';
 import 'app_routes.dart';
 
@@ -30,10 +34,19 @@ GoRouter goRouter(Ref ref) {
       ),
       GoRoute(
         path: AppRoutes.login,
-        builder: (context, state) => const _StubScreen(
-          title: 'Вход',
-          subtitle: 'Экран входа появится в шаге 7',
-        ),
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.register,
+        builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.verifyEmail,
+        builder: (context, state) => const VerifyEmailScreen(),
       ),
       GoRoute(
         path: '/home',
