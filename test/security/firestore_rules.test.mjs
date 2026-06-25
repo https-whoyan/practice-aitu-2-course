@@ -23,6 +23,10 @@ const env = await initializeTestEnvironment({
   },
 });
 
+// Чистим данные эмулятора, чтобы прогон был идемпотентным (create-тесты не
+// должны превращаться в update из-за документов от прошлого запуска).
+await env.clearFirestore();
+
 // Базовые документы — пишем в обход правил.
 await env.withSecurityRulesDisabled(async (ctx) => {
   const db = ctx.firestore();
