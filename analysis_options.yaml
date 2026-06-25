@@ -12,6 +12,8 @@ analyzer:
   errors:
     # Незакрытые TODO в заглушках — предупреждение, не ошибка.
     todo: ignore
+  plugins:
+    - custom_lint
 
 linter:
   rules:

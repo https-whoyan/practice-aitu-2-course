@@ -43,6 +43,9 @@ dependencies:
   # State management / DI — Riverpod (code-gen вариант, @riverpod).
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
+  go_router: ^17.3.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
 
 dev_dependencies:
   flutter_test:
@@ -50,11 +53,13 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
-  # Кодогенерация и линтеры Riverpod.
+  # Кодогенерация и линтеры.
   build_runner: ^2.4.13
   riverpod_generator: ^2.6.3
   custom_lint: ^0.7.0
   riverpod_lint: ^2.6.3
+  freezed: ^3.1.0
+  json_serializable: ^6.9.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

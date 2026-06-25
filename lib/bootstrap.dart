@@ -1,10 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'core/config/app_config.dart';
 import 'firebase/emulators.dart';
+import 'services/logger.dart';
 
 /// Единая точка старта приложения для всех флейворов.
 ///
@@ -13,6 +15,17 @@ import 'firebase/emulators.dart';
 Future<void> bootstrap(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Единая точка для необработанных ошибок (позже — Crashlytics).
+  FlutterError.onError = (details) {
+    AppLogger.e('FlutterError', details.exception, details.stack);
+    FlutterError.presentError(details);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    AppLogger.e('PlatformDispatcher', error, stack);
+    return true;
+  };
+
+  AppLogger.i('bootstrap: $config');
   await Firebase.initializeApp(options: config.firebaseOptions);
 
   // В dev-флейворе вся работа идёт против Firebase Emulator Suite (шаг 3).
