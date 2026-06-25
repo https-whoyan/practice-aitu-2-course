@@ -1,0 +1,13 @@
+{
+  "name": "security-rules-tests",
+  "description": "Тесты Firestore Security Rules на эмуляторе (шаг 8)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node firestore_rules.test.mjs"
+  },
+  "dependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.10.0"
+  }
+}

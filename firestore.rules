@@ -1,10 +1,50 @@
 rules_version = '2';
 
-// Каркас Security Rules — принцип «default deny».
-// Всё закрыто по умолчанию; правила для users/profiles открываются в шаге 8,
-// остальные коллекции — точечно по мере фич в Сессии 2.
+// Security Rules — каркас с принципом «default deny» (ТЗ §8.1–8.2).
+// Безопасность держится на сервере, а не на скрытии кнопок в UI.
+// Здесь — правила для users/profiles (шаг 8). Остальные коллекции открываются
+// точечно по мере фич в Сессии 2 (всё неуказанное запрещено по умолчанию).
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Роль читается из users/{uid}. В Сессии 2 переключимся на custom claims
+    // (request.auth.token.role), чтобы не делать get() на каждый запрос.
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin()   { return isSignedIn() && getRole() == 'admin'; }
+    function isTeacher() { return isSignedIn() && getRole() == 'teacher'; }
+    function isStudent() { return isSignedIn() && getRole() == 'student'; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+
+    // Системный документ пользователя: роль/статус правит только админ.
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      // Создаётся при самостоятельной регистрации — всегда роль student
+      // (ТЗ §5.1.1); привилегии повысить при создании нельзя.
+      allow create: if isOwner(uid)
+                    && request.resource.data.role == 'student'
+                    && request.resource.data.status in ['pendingVerification', 'active'];
+
+      // role/status меняет только админ (пользователь — нет, ТЗ §5.2).
+      allow update, delete: if isAdmin();
+    }
+
+    // Профиль: пользователь правит свой, админ — любой.
+    match /profiles/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(uid) || isAdmin();
+      allow update: if isOwner(uid) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Всё остальное — запрещено (default deny).
     match /{document=**} {
       allow read, write: if false;
     }

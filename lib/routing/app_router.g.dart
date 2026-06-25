@@ -6,13 +6,13 @@ part of 'app_router.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$goRouterHash() => r'595410ddd4781e5470fda9fb6f9633fdfac6c489';
+String _$goRouterHash() => r'b867e066db9f9d89245785628cf6ff43fecf5c8d';
 
-/// Провайдер корневого роутера приложения.
+/// Провайдер корневого роутера с ролевыми guard'ами.
 ///
-/// На шаге 4 — каркас с заглушками `/splash`, `/login`, `/home` и точкой
-/// `redirect` для будущих ролевых guard'ов (шаг 8). Ветви навигации по ролям
-/// (`StatefulShellRoute`) добавляются в шаге 9.
+/// Редирект централизован в `redirect` (одна точка навигационной защиты).
+/// Ролевые деревья (`StatefulShellRoute`) с разделами-заглушками и
+/// dashboard'ами наполняются в шаге 9.
 ///
 /// Copied from [goRouter].
 @ProviderFor(goRouter)
