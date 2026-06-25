@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart';
 
 /// Окружение сборки. Выбирается отдельным entrypoint'ом (flavor):
@@ -15,30 +16,34 @@ class AppConfig {
     required this.appName,
     required this.useEmulators,
     required this.emulatorHost,
+    required this.firebaseOptions,
   });
 
   /// dev-конфиг: работает против Firebase Emulator Suite.
-  factory AppConfig.dev() => AppConfig(
+  factory AppConfig.dev(FirebaseOptions firebaseOptions) => AppConfig(
         environment: Environment.dev,
         appName: 'EduApp Dev',
         useEmulators: true,
         emulatorHost: resolveEmulatorHost(),
+        firebaseOptions: firebaseOptions,
       );
 
   /// staging-конфиг: реальный Firebase проекта staging.
-  factory AppConfig.staging() => AppConfig(
+  factory AppConfig.staging(FirebaseOptions firebaseOptions) => AppConfig(
         environment: Environment.staging,
         appName: 'EduApp Staging',
         useEmulators: false,
         emulatorHost: resolveEmulatorHost(),
+        firebaseOptions: firebaseOptions,
       );
 
   /// prod-конфиг: реальный Firebase проекта prod.
-  factory AppConfig.prod() => const AppConfig(
+  factory AppConfig.prod(FirebaseOptions firebaseOptions) => AppConfig(
         environment: Environment.prod,
         appName: 'EduApp',
         useEmulators: false,
         emulatorHost: 'localhost',
+        firebaseOptions: firebaseOptions,
       );
 
   final Environment environment;
@@ -50,6 +55,9 @@ class AppConfig {
   /// Хост эмуляторов. Зависит от платформы: web/desktop → `localhost`,
   /// Android-эмулятор видит хост-машину как `10.0.2.2`.
   final String emulatorHost;
+
+  /// Firebase-конфиг текущей платформы для этого окружения.
+  final FirebaseOptions firebaseOptions;
 
   bool get isDev => environment == Environment.dev;
   bool get isStaging => environment == Environment.staging;

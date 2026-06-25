@@ -1,15 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app.dart';
 import 'core/config/app_config.dart';
+import 'firebase/emulators.dart';
 
 /// Единая точка старта приложения для всех флейворов.
 ///
 /// Каждый entrypoint (`main.dart` / `main_staging.dart` / `main_prod.dart`)
-/// собирает свой [AppConfig] и передаёт сюда. На следующих шагах здесь же
-/// инициализируется Firebase (шаг 2), подключаются эмуляторы (шаг 3) и
-/// оборачивается `ProviderScope` (шаг 4).
+/// собирает свой [AppConfig] и передаёт сюда.
 Future<void> bootstrap(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(EduApp(config: config));
+
+  await Firebase.initializeApp(options: config.firebaseOptions);
+
+  // В dev-флейворе вся работа идёт против Firebase Emulator Suite (шаг 3).
+  if (config.useEmulators) {
+    await connectToEmulators(config.emulatorHost);
+  }
+
+  runApp(
+    ProviderScope(
+      child: EduApp(config: config),
+    ),
+  );
 }
