@@ -14,7 +14,25 @@ build/
 *.iml
 pubspec.lock
 
+# FVM
+.fvm/
+
+# Env files
+*.env
+.env*
+
 # Firebase
 .firebase/
 firebase-debug.log
+firestore-debug.log
+ui-debug.log
 serviceAccount*.json
+# Данные эмуляторов (импорт/экспорт между сессиями) — не коммитим
+.emulator-data/
+
+# Платформенные секреты Firebase (не светим в репозитории).
+# firebase_options_*.dart — публичные клиентские ключи, их коммитить можно.
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/firebase_app_id_file.json
+macos/Runner/GoogleService-Info.plist

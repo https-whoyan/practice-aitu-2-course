@@ -1,0 +1,19 @@
+# Статический анализ проекта. Запуск: `flutter analyze`.
+# Линтер ужесточается по мере роста проекта; на старте — flutter_lints.
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  # Сгенерированный код (freezed/json/riverpod) не анализируем и исключаем из
+  # отчётов — он генерируется build_runner'ом (шаг 4+).
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/firebase/firebase_options_*.dart"
+  errors:
+    # Незакрытые TODO в заглушках — предупреждение, не ошибка.
+    todo: ignore
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    require_trailing_commas: true
