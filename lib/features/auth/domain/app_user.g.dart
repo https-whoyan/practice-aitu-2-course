@@ -21,6 +21,8 @@ _AppUser _$AppUserFromJson(Map<String, dynamic> json) => _AppUser(
     json['lastLoginAt'] as Timestamp?,
   ),
   emailVerified: json['emailVerified'] as bool? ?? false,
+  deleted: json['deleted'] as bool? ?? false,
+  createdBy: json['createdBy'] as String?,
 );
 
 Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
@@ -33,6 +35,8 @@ Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
     instance.lastLoginAt,
   ),
   'emailVerified': instance.emailVerified,
+  'deleted': instance.deleted,
+  'createdBy': instance.createdBy,
 };
 
 const _$UserRoleEnumMap = {

@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppUser {
 
- String get uid; String get email; UserRole get role; AccountStatus get status;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get lastLoginAt; bool get emailVerified;
+ String get uid; String get email; UserRole get role; AccountStatus get status;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get lastLoginAt; bool get emailVerified;// Мягкое удаление (ТЗ §5.3.1, шаг 10): данные сохраняются, аккаунт скрыт
+// из активных списков. Кто создал — для аудита (createTeacher, §17.1).
+ bool get deleted; String? get createdBy;
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +30,16 @@ $AppUserCopyWith<AppUser> get copyWith => _$AppUserCopyWithImpl<AppUser>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastLoginAt, lastLoginAt) || other.lastLoginAt == lastLoginAt)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastLoginAt, lastLoginAt) || other.lastLoginAt == lastLoginAt)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,role,status,createdAt,lastLoginAt,emailVerified);
+int get hashCode => Object.hash(runtimeType,uid,email,role,status,createdAt,lastLoginAt,emailVerified,deleted,createdBy);
 
 @override
 String toString() {
-  return 'AppUser(uid: $uid, email: $email, role: $role, status: $status, createdAt: $createdAt, lastLoginAt: $lastLoginAt, emailVerified: $emailVerified)';
+  return 'AppUser(uid: $uid, email: $email, role: $role, status: $status, createdAt: $createdAt, lastLoginAt: $lastLoginAt, emailVerified: $emailVerified, deleted: $deleted, createdBy: $createdBy)';
 }
 
 
@@ -48,7 +50,7 @@ abstract mixin class $AppUserCopyWith<$Res>  {
   factory $AppUserCopyWith(AppUser value, $Res Function(AppUser) _then) = _$AppUserCopyWithImpl;
 @useResult
 $Res call({
- String uid, String email, UserRole role, AccountStatus status,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastLoginAt, bool emailVerified
+ String uid, String email, UserRole role, AccountStatus status,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastLoginAt, bool emailVerified, bool deleted, String? createdBy
 });
 
 
@@ -65,7 +67,7 @@ class _$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? lastLoginAt = freezed,Object? emailVerified = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? email = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? lastLoginAt = freezed,Object? emailVerified = null,Object? deleted = null,Object? createdBy = freezed,}) {
   return _then(_self.copyWith(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -74,7 +76,9 @@ as UserRole,status: null == status ? _self.status : status // ignore: cast_nulla
 as AccountStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lastLoginAt: freezed == lastLoginAt ? _self.lastLoginAt : lastLoginAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
+as bool,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -159,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified,  bool deleted,  String? createdBy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified);case _:
+return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified,_that.deleted,_that.createdBy);case _:
   return orElse();
 
 }
@@ -180,10 +184,10 @@ return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified,  bool deleted,  String? createdBy)  $default,) {final _that = this;
 switch (_that) {
 case _AppUser():
-return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified);case _:
+return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified,_that.deleted,_that.createdBy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +204,10 @@ return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String uid,  String email,  UserRole role,  AccountStatus status, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastLoginAt,  bool emailVerified,  bool deleted,  String? createdBy)?  $default,) {final _that = this;
 switch (_that) {
 case _AppUser() when $default != null:
-return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified);case _:
+return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_that.lastLoginAt,_that.emailVerified,_that.deleted,_that.createdBy);case _:
   return null;
 
 }
@@ -215,7 +219,7 @@ return $default(_that.uid,_that.email,_that.role,_that.status,_that.createdAt,_t
 @JsonSerializable()
 
 class _AppUser implements AppUser {
-  const _AppUser({required this.uid, required this.email, this.role = UserRole.student, this.status = AccountStatus.pendingVerification, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastLoginAt, this.emailVerified = false});
+  const _AppUser({required this.uid, required this.email, this.role = UserRole.student, this.status = AccountStatus.pendingVerification, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastLoginAt, this.emailVerified = false, this.deleted = false, this.createdBy});
   factory _AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
 
 @override final  String uid;
@@ -225,6 +229,10 @@ class _AppUser implements AppUser {
 @override@TimestampConverter() final  DateTime createdAt;
 @override@NullableTimestampConverter() final  DateTime? lastLoginAt;
 @override@JsonKey() final  bool emailVerified;
+// Мягкое удаление (ТЗ §5.3.1, шаг 10): данные сохраняются, аккаунт скрыт
+// из активных списков. Кто создал — для аудита (createTeacher, §17.1).
+@override@JsonKey() final  bool deleted;
+@override final  String? createdBy;
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastLoginAt, lastLoginAt) || other.lastLoginAt == lastLoginAt)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppUser&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.email, email) || other.email == email)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastLoginAt, lastLoginAt) || other.lastLoginAt == lastLoginAt)&&(identical(other.emailVerified, emailVerified) || other.emailVerified == emailVerified)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uid,email,role,status,createdAt,lastLoginAt,emailVerified);
+int get hashCode => Object.hash(runtimeType,uid,email,role,status,createdAt,lastLoginAt,emailVerified,deleted,createdBy);
 
 @override
 String toString() {
-  return 'AppUser(uid: $uid, email: $email, role: $role, status: $status, createdAt: $createdAt, lastLoginAt: $lastLoginAt, emailVerified: $emailVerified)';
+  return 'AppUser(uid: $uid, email: $email, role: $role, status: $status, createdAt: $createdAt, lastLoginAt: $lastLoginAt, emailVerified: $emailVerified, deleted: $deleted, createdBy: $createdBy)';
 }
 
 
@@ -259,7 +267,7 @@ abstract mixin class _$AppUserCopyWith<$Res> implements $AppUserCopyWith<$Res> {
   factory _$AppUserCopyWith(_AppUser value, $Res Function(_AppUser) _then) = __$AppUserCopyWithImpl;
 @override @useResult
 $Res call({
- String uid, String email, UserRole role, AccountStatus status,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastLoginAt, bool emailVerified
+ String uid, String email, UserRole role, AccountStatus status,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastLoginAt, bool emailVerified, bool deleted, String? createdBy
 });
 
 
@@ -276,7 +284,7 @@ class __$AppUserCopyWithImpl<$Res>
 
 /// Create a copy of AppUser
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? lastLoginAt = freezed,Object? emailVerified = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? email = null,Object? role = null,Object? status = null,Object? createdAt = null,Object? lastLoginAt = freezed,Object? emailVerified = null,Object? deleted = null,Object? createdBy = freezed,}) {
   return _then(_AppUser(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -285,7 +293,9 @@ as UserRole,status: null == status ? _self.status : status // ignore: cast_nulla
 as AccountStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lastLoginAt: freezed == lastLoginAt ? _self.lastLoginAt : lastLoginAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,emailVerified: null == emailVerified ? _self.emailVerified : emailVerified // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
+as bool,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

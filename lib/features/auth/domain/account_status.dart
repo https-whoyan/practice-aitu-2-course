@@ -21,4 +21,5 @@ enum AccountStatus {
 
   bool get isActive => this == AccountStatus.active;
   bool get isBlocked => this == AccountStatus.blocked;
+  bool get isPendingVerification => this == AccountStatus.pendingVerification;
 }

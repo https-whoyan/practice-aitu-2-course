@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/error/error_mapper.dart';
+import '../../../firebase/firebase_providers.dart';
 import '../../../shared/widgets/widgets.dart';
 import '../../../theme/app_spacing.dart';
 import '../data/auth_providers.dart';
@@ -66,9 +67,18 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 isLoading: _busy,
                 onPressed: () => _run(() async {
                   final verified = await auth.reloadAndCheckVerified();
-                  return verified
-                      ? 'Email подтверждён.'
-                      : 'Email ещё не подтверждён.';
+                  if (!verified) return 'Email ещё не подтверждён.';
+                  // Обновляем токен (появляется claim email_verified) и просим
+                  // сервер перевести аккаунт в active — гейт откроется (P1-10).
+                  await ref
+                      .read(firebaseAuthProvider)
+                      .currentUser
+                      ?.getIdToken(true);
+                  await ref
+                      .read(firebaseFunctionsProvider)
+                      .httpsCallable('confirmEmailVerified')
+                      .call<Object?>();
+                  return 'Email подтверждён.';
                 }),
               ),
               AppSpacing.gapSm,

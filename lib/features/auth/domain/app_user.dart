@@ -23,6 +23,10 @@ abstract class AppUser with _$AppUser {
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? lastLoginAt,
     @Default(false) bool emailVerified,
+    // Мягкое удаление (ТЗ §5.3.1, шаг 10): данные сохраняются, аккаунт скрыт
+    // из активных списков. Кто создал — для аудита (createTeacher, §17.1).
+    @Default(false) bool deleted,
+    String? createdBy,
   }) = _AppUser;
 
   factory AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
