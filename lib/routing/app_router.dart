@@ -106,6 +106,12 @@ String? _redirect(Ref ref, String location) {
     return location == AppRoutes.blocked ? null : AppRoutes.blocked;
   }
 
+  // Email не подтверждён → экран верификации (§5.1.4, P1-10). После
+  // подтверждения CF переводит status → active, и гейт открывается.
+  if (appUser.status.isPendingVerification) {
+    return location == AppRoutes.verifyEmail ? null : AppRoutes.verifyEmail;
+  }
+
   final home = homeRouteForRole(appUser.role);
 
   // С auth/splash/blocked — на свой корневой раздел.

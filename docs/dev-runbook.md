@@ -71,3 +71,29 @@ cd test/security && npm install && npm test
 > Примечание: в этом окружении путь проекта содержит кириллицу («Документы»),
 > из-за чего LSP-сервер `flutter analyze` падает. Используйте `dart analyze lib`
 > и `dart run custom_lint` — они работают корректно.
+>
+> Если нужен именно `flutter analyze` или `build_runner` (codegen),
+> скопируйте проект на ASCII-путь и работайте там, затем верните сгенерированные
+> файлы:
+>
+> ```bash
+> DST=/tmp/edu_app_copy
+> rsync -a --exclude '.git' --exclude 'build' --exclude '.dart_tool' \
+>   --exclude 'node_modules' --exclude 'functions/lib' ./ "$DST"/
+> cd "$DST" && flutter pub get
+> dart run build_runner build --delete-conflicting-outputs
+> flutter analyze lib
+> # вернуть только сгенерированные файлы в рабочую копию:
+> rsync -a --include='*/' --include='*.g.dart' --include='*.freezed.dart' \
+>   --exclude='*' "$DST"/lib/ <путь-проекта>/lib/
+> ```
+>
+> Прогон тестов Security Rules одной командой (поднимает эмулятор сам):
+>
+> ```bash
+> firebase emulators:exec --only firestore,storage --project demo-eduapp-dev \
+>   "cd test/security && node firestore_rules.test.mjs"
+> ```
+>
+> Строки вида `evaluation error at L..` в выводе тестов — это ожидаемые
+> `assertFails` (проверки запрета доступа), а не падения.
