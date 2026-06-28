@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'failure.dart';
@@ -29,6 +31,20 @@ Failure mapErrorToFailure(Object error, [StackTrace? stackTrace]) {
   }
 
   return Failure.unknown(error: error);
+}
+
+/// Преобразует ошибки потока в единый [Failure].
+///
+/// `withConverter`-стримы Firestore бросают сырые `FirebaseException`; экраны
+/// ждут [Failure] (`AppErrorView`). Навешивается на `watch*`-методы репозиториев,
+/// чтобы UI всегда получал доменный тип ошибки.
+extension FailureStream<T> on Stream<T> {
+  Stream<T> mapFailures() => transform(
+        StreamTransformer<T, T>.fromHandlers(
+          handleError: (error, stackTrace, sink) =>
+              sink.addError(mapErrorToFailure(error, stackTrace), stackTrace),
+        ),
+      );
 }
 
 /// Переводит коды `FirebaseAuthException` в дружелюбные сообщения (ТЗ §5.1).

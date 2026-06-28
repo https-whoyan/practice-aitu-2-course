@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import '../services/logger.dart';
+import 'firebase_providers.dart' show kFunctionsRegion;
 
 /// Порты эмуляторов Firebase Suite. Должны совпадать с `firebase.json` (шаг 3).
 class EmulatorPorts {
@@ -27,7 +28,7 @@ Future<void> connectToEmulators(String host) async {
     FirebaseFirestore.instance.useFirestoreEmulator(host, EmulatorPorts.firestore);
     await FirebaseStorage.instance
         .useStorageEmulator(host, EmulatorPorts.storage);
-    FirebaseFunctions.instance
+    FirebaseFunctions.instanceFor(region: kFunctionsRegion)
         .useFunctionsEmulator(host, EmulatorPorts.functions);
     AppLogger.i('Подключены эмуляторы Firebase на $host '
         '(auth:${EmulatorPorts.auth}, firestore:${EmulatorPorts.firestore}, '

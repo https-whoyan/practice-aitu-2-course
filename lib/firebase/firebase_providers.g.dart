@@ -63,7 +63,7 @@ final firebaseStorageProvider = Provider<FirebaseStorage>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef FirebaseStorageRef = ProviderRef<FirebaseStorage>;
-String _$firebaseFunctionsHash() => r'd93861c0944a5de507eaed64d4c4ecf0b90ae818';
+String _$firebaseFunctionsHash() => r'866fd6d7269bd3d4fe3001f6c1fc7e4da7e6eb0d';
 
 /// See also [firebaseFunctions].
 @ProviderFor(firebaseFunctions)

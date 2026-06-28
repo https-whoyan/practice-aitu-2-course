@@ -7,6 +7,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'firebase_providers.g.dart';
 
+/// Регион Cloud Functions (совпадает с `FUNCTION_OPTS` в `functions/src/lib/region.ts`).
+/// Клиент обязан вызывать функции в том же регионе, иначе SDK ищет их по
+/// неправильному URL (особенно заметно на эмуляторе).
+const String kFunctionsRegion = 'europe-west1';
+
 /// Инстансы Firebase отдаются через провайдеры, а не через глобальные
 /// синглтоны (`FirebaseXxx.instance`) напрямую в коде фич. Это:
 ///   * упрощает тесты (override провайдера на фейк/эмулятор);
@@ -23,4 +28,5 @@ FirebaseFirestore firestore(Ref ref) => FirebaseFirestore.instance;
 FirebaseStorage firebaseStorage(Ref ref) => FirebaseStorage.instance;
 
 @Riverpod(keepAlive: true)
-FirebaseFunctions firebaseFunctions(Ref ref) => FirebaseFunctions.instance;
+FirebaseFunctions firebaseFunctions(Ref ref) =>
+    FirebaseFunctions.instanceFor(region: kFunctionsRegion);
