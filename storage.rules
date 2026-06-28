@@ -1,9 +1,86 @@
 rules_version = '2';
 
-// Каркас правил Storage — «default deny».
-// Доступ к файлам (аватары, материалы курсов) открывается в Сессии 2.
+// Storage Rules (ТЗ §8.4, шаг 27): лимит размера, белый список типов,
+// запрет исполняемых, привязка файла к пользователю и сущности по пути.
+// Пути совпадают с сервисами загрузки: материалы — MaterialStorageService,
+// отправки — FirestoreSubmissionRepository. Default deny на всё остальное.
 service firebase.storage {
   match /b/{bucket}/o {
+
+    function isSignedIn() { return request.auth != null; }
+    // Роль из custom claim (шаг 10). Преподаватели создаются CF и имеют claim.
+    function role() { return request.auth.token.role; }
+
+    function withinSize() { return request.resource.size < 25 * 1024 * 1024; }
+    function safeType() {
+      return request.resource.contentType.matches(
+        'image/.*|application/pdf|application/zip|text/plain|' +
+        'application/vnd.openxmlformats-officedocument.*|' +
+        'application/msword|application/vnd.ms-.*'
+      );
+    }
+    function notExecutable() {
+      return !request.resource.contentType.matches(
+        '.*(x-msdownload|x-sh|x-executable|x-msdos-program).*'
+      );
+    }
+
+    // Преподаватель ведёт курс задания (через assignment → course.teacherIds).
+    // Storage-аналог P0-4: чтение чужих сдач сужено до владельца курса (§8.4 п.2).
+    function teacherOwnsSubmissionCourse(assignmentId) {
+      return role() == 'teacher'
+        && firestore.exists(
+             /databases/(default)/documents/assignments/$(assignmentId))
+        && firestore.exists(
+             /databases/(default)/documents/courses/$(
+               firestore.get(
+                 /databases/(default)/documents/assignments/$(assignmentId)
+               ).data.courseId))
+        && firestore.get(
+             /databases/(default)/documents/courses/$(
+               firestore.get(
+                 /databases/(default)/documents/assignments/$(assignmentId)
+               ).data.courseId))
+             .data.get('teacherIds', []).hasAny([request.auth.uid]);
+    }
+
+    // Аватары пользователя: владелец пишет свой, читают авторизованные.
+    match /avatars/{uid}/{file} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == uid
+                   && withinSize() && safeType() && notExecutable();
+    }
+
+    // Обложки курсов: путь covers/{uid}/{file}. Загружает преподаватель/админ
+    // в свою папку, читают авторизованные (§5.4.3, P2-5).
+    match /covers/{uid}/{file} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == uid
+                   && role() in ['teacher', 'admin']
+                   && withinSize() && safeType() && notExecutable();
+    }
+
+    // Материалы курса: путь materials/{courseId}/{weekId}/{uid}/{file}.
+    // Пишет преподаватель/админ, читают участники курса (детальная проверка
+    // принадлежности — в Firestore-правилах для materials).
+    match /materials/{courseId}/{weekId}/{uid}/{file} {
+      allow read: if isSignedIn();
+      allow write: if role() in ['teacher', 'admin']
+                   && withinSize() && safeType() && notExecutable();
+    }
+
+    // Отправки заданий: путь submissions/{assignmentId}/{uid}/{file}.
+    // Студент грузит только в свою папку (§8.4 п.1). Читают: владелец-студент,
+    // админ и преподаватель ТОЛЬКО своего курса (§8.4 п.2, P0-7).
+    match /submissions/{assignmentId}/{uid}/{file} {
+      allow read: if request.auth.uid == uid
+                  || role() == 'admin'
+                  || teacherOwnsSubmissionCourse(assignmentId);
+      allow write: if request.auth.uid == uid
+                   && withinSize() && safeType() && notExecutable();
+    }
+
+    // Всё остальное — запрещено (default deny).
     match /{allPaths=**} {
       allow read, write: if false;
     }

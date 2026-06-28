@@ -22,6 +22,25 @@ service cloud.firestore {
     function isStudent() { return isSignedIn() && getRole() == 'student'; }
     function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
 
+    // Преподаватель ведёт курс, только если он в courses/{courseId}.teacherIds
+    // (§8.2). Короткое замыкание гарантирует валидный путь до get() (P0-4).
+    function teacherOwnsCourse(courseId) {
+      return isTeacher()
+        && courseId is string && courseId.size() > 0
+        && exists(/databases/$(database)/documents/courses/$(courseId))
+        && get(/databases/$(database)/documents/courses/$(courseId))
+             .data.get('teacherIds', []).hasAny([request.auth.uid]);
+    }
+
+    // Задание открыто для отправки: разрешена поздняя сдача, дедлайна нет, либо
+    // он ещё не наступил (§5.4.6, P0-3). Вызывать только когда статус submitted.
+    function assignmentOpen(assignmentId) {
+      let a = get(/databases/$(database)/documents/assignments/$(assignmentId)).data;
+      return a.get('allowLateSubmission', false) == true
+        || a.get('deadline', null) == null
+        || request.time < a.get('deadline', null);
+    }
+
     // Системный документ пользователя: роль/статус правит только админ.
     match /users/{uid} {
       allow read: if isOwner(uid) || isAdmin();
@@ -42,6 +61,172 @@ service cloud.firestore {
       allow create: if isOwner(uid) || isAdmin();
       allow update: if isOwner(uid) || isAdmin();
       allow delete: if isAdmin();
+    }
+
+    // --- Блок 4. Группы и курсы (шаг 12). Полная детализация — шаг 27. ---
+
+    // Группы: читают авторизованные; правят админ/преподаватель.
+    match /groups/{groupId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Курсы: читают авторизованные; правят админ/преподаватель.
+    match /courses/{courseId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Журнал действий: читает только админ; пишет только сервер (admin SDK
+    // обходит правила), с клиента запись запрещена (ТЗ §7.13, §8.6).
+    match /auditLogs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // --- Блок 5. Недели, материалы, коды (шаги 13–16). Детализация — шаг 27. ---
+
+    // Недели курса: преподаватель/админ видят любые; студент — только
+    // опубликованные (§5.6.3, P0-5). Правят преподаватель/админ.
+    match /courseWeeks/{weekId} {
+      allow read: if isAdmin() || isTeacher()
+                  || (isSignedIn() && resource.data.get('isPublished', false) == true);
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Материалы: преподаватель/админ — любые; студент — только опубликованные
+    // (§5.6.3, P0-5). Правят преподаватель/админ.
+    match /materials/{materialId} {
+      allow read: if isAdmin() || isTeacher()
+                  || (isSignedIn() && resource.data.get('isPublished', false) == true);
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Коды приглашения: создаёт/гасит сервер (joinGroupByCode, admin SDK).
+    // С клиента — только просмотр своих кодов преподавателем/админом.
+    match /inviteCodes/{codeId} {
+      allow read: if isAdmin() || isTeacher();
+      allow write: if false;
+    }
+
+    // --- Блок 6. Задания, отправки, оценки (шаги 17–19). Детализация — шаг 27. ---
+
+    // Задания: преподаватель/админ — любые; студент — только опубликованные
+    // (§8.3 п.6, P0-5). Правят преподаватель/админ.
+    match /assignments/{assignmentId} {
+      allow read: if isAdmin() || isTeacher()
+                  || (isSignedIn() && resource.data.get('isPublished', false) == true);
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Отправки: студент пишет и читает свою; преподаватель видит/правит только
+    // отправки своих курсов (§8.2, P0-4), админ — любые. Перевод в submitted —
+    // только до дедлайна или при allowLateSubmission (§5.4.6, P0-3).
+    match /submissions/{submissionId} {
+      allow read: if isSignedIn() &&
+                  (resource.data.studentId == request.auth.uid
+                   || isAdmin()
+                   || teacherOwnsCourse(resource.data.courseId));
+      allow create: if isSignedIn()
+                    && request.resource.data.studentId == request.auth.uid
+                    && (request.resource.data.status != 'submitted'
+                        || assignmentOpen(request.resource.data.assignmentId));
+      allow update: if (isSignedIn()
+                        && resource.data.studentId == request.auth.uid
+                        && request.resource.data.studentId == request.auth.uid
+                        && (request.resource.data.status != 'submitted'
+                            || resource.data.status == 'submitted'
+                            || assignmentOpen(resource.data.assignmentId)))
+                       || teacherOwnsCourse(resource.data.courseId)
+                       || isAdmin();
+    }
+
+    // Оценки: студент видит только свои; преподаватель — оценки своих курсов или
+    // где он указан teacherId (§8.2, P0-4), админ — любые. Пишет преподаватель/
+    // админ; аудит правок делает триггер onGradeWritten (ТЗ §8.6).
+    match /grades/{gradeId} {
+      allow read: if isSignedIn() &&
+                  (resource.data.studentId == request.auth.uid
+                   || isAdmin()
+                   || (isTeacher()
+                       && (resource.data.get('teacherId', '') == request.auth.uid
+                           || teacherOwnsCourse(resource.data.get('courseId', '')))));
+      allow create, update: if isAdmin() || isTeacher();
+    }
+
+    // --- Блок 7. Банк вопросов, квизы, попытки (шаги 20–24). Детализация — шаг 27. ---
+
+    // Банк вопросов: содержит правильные ответы — студент НЕ читает (§8.1, §8.5).
+    // Видит только владелец-преподаватель и админ; пишет владелец.
+    match /questionBank/{questionId} {
+      allow read: if isSignedIn() &&
+                  (resource.data.ownerTeacherId == request.auth.uid || isAdmin());
+      allow create: if isTeacher() &&
+                    request.resource.data.ownerTeacherId == request.auth.uid;
+      allow update, delete: if isAdmin() ||
+                    (isSignedIn() &&
+                     resource.data.ownerTeacherId == request.auth.uid);
+    }
+
+    // Квизы: настройки без правильных ответов. Преподаватель/админ — любые;
+    // студент — только опубликованные (§8.3 п.6, P0-5). Правят преподаватель/админ.
+    match /quizzes/{quizId} {
+      allow read: if isAdmin() || isTeacher()
+                  || (isSignedIn() && resource.data.get('isPublished', false) == true);
+      allow create, update, delete: if isAdmin() || isTeacher();
+    }
+
+    // Попытки: создаёт сервер (startQuizAttempt, admin SDK). Студент читает свою,
+    // правит ответы только пока inProgress (§8.5 п.6) и переводит лишь в submitted;
+    // расчёт балла делает серверный триггер (admin SDK обходит правила).
+    match /quizAttempts/{attemptId} {
+      allow read: if isSignedIn() &&
+                  (resource.data.studentId == request.auth.uid
+                   || isTeacher() || isAdmin());
+      allow create: if false;
+      // Менять можно ТОЛЬКО answers/status/finishedAt; снапшот вопросов, баллы и
+      // порядок опций неизменны — иначе студент накрутит балл (§8.5, P0-1).
+      // На submit finishedAt фиксируется серверным временем (для проверки
+      // дедлайна/лимита на сервере, P0-2).
+      allow update: if isSignedIn()
+                    && resource.data.studentId == request.auth.uid
+                    && resource.data.status == 'inProgress'
+                    && request.resource.data.status in ['inProgress', 'submitted']
+                    && request.resource.data.diff(resource.data)
+                         .affectedKeys().hasOnly(['answers', 'status', 'finishedAt'])
+                    && (request.resource.data.status != 'submitted'
+                        || request.resource.data.finishedAt == request.time);
+    }
+
+    // --- Блок 8. Уведомления и сводки статистики (шаги 25, 26). ---
+
+    // Уведомления: создаёт/рассылает только сервер (CF). Адресат читает свои и
+    // может пометить прочитанным (только поле isRead).
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if false; // только CF
+      allow update: if isSignedIn()
+                    && resource.data.userId == request.auth.uid
+                    && request.resource.data.userId == resource.data.userId;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Сводка статистики студента: пересчитывает только сервер (CF). Студент
+    // читает свою, преподаватель/админ — для мониторинга (§5.7).
+    match /studentSummaries/{studentId} {
+      allow read: if isOwner(studentId) || isTeacher() || isAdmin();
+      allow write: if false; // только CF (пересчёт)
+    }
+
+    // Сводки группы/курса: пересчитывает только сервер (CF). Читают
+    // преподаватель/админ для статистики (§5.7.1–5.7.2, P3-2/3).
+    match /groupSummaries/{groupId} {
+      allow read: if isTeacher() || isAdmin();
+      allow write: if false;
+    }
+    match /courseSummaries/{courseId} {
+      allow read: if isTeacher() || isAdmin();
+      allow write: if false;
     }
 
     // Всё остальное — запрещено (default deny).
