@@ -65,3 +65,24 @@ git push prct46 yan:main
   с порядком (ты должен быть первым) и при необходимости очистите `main`.
 
 Картина целиком: [`git-workflow.md`](git-workflow.md).
+
+---
+
+## Сессия 2 — ветка `yan-s2`
+
+Ты снова **первый**. Твоя доля Сессии 2: core-зависимости, Cloud Functions,
+Security/Storage Rules, auth, админка (~8.1k строк). Ветка `yan-s2` надстроена
+поверх `duran` (конца Сессии 1), на котором уже стоит `main` Prct_46.
+
+> ✅ **Уже сделано:** ты залит первым — `main` Prct_46 указывает на `yan-s2`.
+> Ниже команды для справки / если придётся повторить.
+
+```bash
+git fetch origin
+git checkout yan-s2                 # впервые: git checkout -b yan-s2 origin/yan-s2
+git log --oneline -5               # core, Cloud Functions, Rules, auth, админка
+git push prct46 yan-s2:main        # FF поверх duran (step 1–9)
+```
+
+После этого скажи Beksultan, что можно заливать `beksultan-s2`.
+Те же запреты: без `rebase`/`squash`/`amend`/`--force`, `pull --ff-only`.

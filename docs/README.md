@@ -75,6 +75,10 @@
 
 ### Персональные инструкции (заливка в Prct_46)
 
-- [`teammate-yan.md`](teammate-yan.md) — Yan (ветка `yan`, заливает первым)
-- [`teammate-beksultan.md`](teammate-beksultan.md) — Beksultan (ветка `beksultan`, второй)
-- [`teammate-duran.md`](teammate-duran.md) — Duran (ветка `duran`, последний)
+- [`teammate-yan.md`](teammate-yan.md) — Yan (ветки `yan` / `yan-s2`, заливает первым)
+- [`teammate-beksultan.md`](teammate-beksultan.md) — Beksultan (ветки `beksultan` / `beksultan-s2`, второй)
+- [`teammate-duran.md`](teammate-duran.md) — Duran (ветки `duran` / `duran-s2`, последний)
+
+> Сессия 1 уже собрана в `main` Prct_46. Распределение и сборка Сессии 2
+> (ветки `*-s2`) — в [`git-workflow.md`](git-workflow.md), раздел «Сессия 2».
+> Каждый заливает свою ветку **сам**, по очереди `yan-s2 → beksultan-s2 → duran-s2`.

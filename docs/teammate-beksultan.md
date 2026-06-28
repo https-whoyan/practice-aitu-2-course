@@ -64,3 +64,35 @@ git push prct46 beksultan:main
 
 Картина целиком: [`git-workflow.md`](git-workflow.md).
 Запуск проекта локально: [`dev-runbook.md`](dev-runbook.md).
+
+---
+
+## Сессия 2 — ветка `beksultan-s2`
+
+Ты снова **второй** — после Yan. Твоя доля Сессии 2: курсы и недели преподавателя,
+материалы, доступ студента к курсам/вступление в группу, задания, оценки (~12.1k строк).
+Ветка `beksultan-s2` идёт поверх `yan-s2` (стопка, как в Сессии 1).
+
+> ⚠️ Сначала дождись, пока Yan зальёт `yan-s2` (его шаг уже выполнен — `main`
+> Prct_46 стоит на `yan-s2`). Только потом ты.
+
+```bash
+git fetch origin
+git checkout beksultan-s2          # впервые: git checkout -b beksultan-s2 origin/beksultan-s2
+
+# самопроверка: видны твои session-2 шаги
+git log --oneline -10
+#   курсы/недели, материалы, доступ студента, задания, оценки
+
+# если remote ещё не добавлен:
+git remote add prct46 git@github.com:Tduyer/Prct_46.git
+
+# залить в main (FF поверх yan-s2)
+git push prct46 beksultan-s2:main
+```
+
+После этого скажи Duran, что можно заливать `duran-s2`.
+
+**Если пуш отклонён (non-fast-forward):** не делай `--force`. Либо Yan ещё не залил
+`yan-s2`, либо нарушен порядок. Должно быть `yan-s2 → beksultan-s2 → duran-s2`.
+Запреты прежние: без `rebase`/`squash`/`amend`, `pull --ff-only`.
